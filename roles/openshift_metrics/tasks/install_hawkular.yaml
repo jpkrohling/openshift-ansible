@@ -39,6 +39,13 @@
     resource_name: hawkular-reads-logging-ca-cert
     state: present
 
+- name: Allow Hawkular to access Elasticsearch on logging
+  oc_adm_policy_user:
+    user: system:serviceaccount:{{openshift_metrics_project}}:hawkular
+    resource_kind: cluster-role
+    resource_name: cluster-admin
+    state: present
+
 - block:
   - set_fact: hawkular_key={{ lookup('file', openshift_metrics_hawkular_key) }}
     when: openshift_metrics_hawkular_key | exists
