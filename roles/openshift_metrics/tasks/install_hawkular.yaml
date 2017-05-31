@@ -25,10 +25,12 @@
   oc_clusterrole:
     name: hawkular-reads-logging-ca-cert
     rules:
-      apiGroups:
+    - apiGroups:
       - ""
-      verbs: [get]
-      resources: [secrets]
+      verbs:
+      - get
+      resources:
+      - secrets
 
 ## TODO: how to restrict this to allow the user 'hawkular' to read only a very specific secret?
 ## For now, generic (and dangerous), but make sure to change this before sending the PR
