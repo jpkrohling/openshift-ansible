@@ -36,7 +36,7 @@
 ## For now, generic (and dangerous), but make sure to change this before getting this merged
 - name: Allow Hawkular to read the Logging CA cert secret
   oc_adm_policy_user:
-    user: hawkular
+    user: system:serviceaccount:{{openshift_metrics_project}}:hawkular
     resource_kind: cluster-role
     resource_name: hawkular-reads-logging-ca-cert
     state: present
