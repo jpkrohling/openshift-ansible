@@ -328,8 +328,8 @@ openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 
 # router's default certificate.
 #openshift_hosted_router_certificate={"certfile": "/path/to/router.crt", "keyfile": "/path/to/router.key", "cafile": "/path/to/router-ca.crt"}
 #
-# Disable management of the OpenShift Router
-#openshift_hosted_manage_router=false
+# Manage the OpenShift Router (optional)
+#openshift_hosted_manage_router=true
 #
 # Router sharding support has been added and can be achieved by supplying the correct
 # data to the inventory.  The variable to house the data is openshift_hosted_routers
@@ -406,8 +406,8 @@ openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 
 # Validity of the auto-generated certificate in days (optional)
 #openshift_hosted_registry_cert_expire_days=730
 #
-# Disable management of the OpenShift Registry
-#openshift_hosted_manage_registry=false
+# Manage the OpenShift Registry (optional)
+#openshift_hosted_manage_registry=true
 
 # Registry Storage Options
 #
@@ -794,6 +794,35 @@ openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 
 # Controls validity for etcd CA, peer, server and client certificates.
 #
 #etcd_ca_default_days=1825
+
+# Upgrade Control
+#
+# By default nodes are upgraded in a serial manner one at a time and all failures
+# are fatal, one set of variables for normal nodes, one set of variables for
+# nodes that are part of control plane as the number of hosts may be different
+# in those two groups.
+#openshift_upgrade_nodes_serial=1
+#openshift_upgrade_nodes_max_fail_percentage=0
+#openshift_upgrade_control_plane_nodes_serial=1
+#openshift_upgrade_control_plane_nodes_max_fail_percentage=0
+#
+# You can specify the number of nodes to upgrade at once. We do not currently
+# attempt to verify that you have capacity to drain this many nodes at once
+# so please be careful when specifying these values. You should also verify that
+# the expected number of nodes are all schedulable and ready before starting an
+# upgrade. If it's not possible to drain the requested nodes the upgrade will
+# stall indefinitely until the drain is successful.
+#
+# If you're upgrading more than one node at a time you can specify the maximum
+# percentage of failure within the batch before the upgrade is aborted. Any
+# nodes that do fail are ignored for the rest of the playbook run and you should
+# take care to investigate the failure and return the node to service so that
+# your cluster.
+#
+# The percentage must exceed the value, this would fail on two failures
+# openshift_upgrade_nodes_serial=4 openshift_upgrade_nodes_max_fail_percentage=49
+# where as this would not
+# openshift_upgrade_nodes_serial=4 openshift_upgrade_nodes_max_fail_percentage=50
 
 # host group for masters
 [masters]

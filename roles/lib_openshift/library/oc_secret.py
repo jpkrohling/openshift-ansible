@@ -108,6 +108,12 @@ options:
     required: false
     default: None
     aliases: []
+  type:
+    description:
+    - The secret type.
+    required: false
+    default: None
+    aliases: []
   force:
     description:
     - Whether or not to force the operation
@@ -1419,7 +1425,6 @@ class Utils(object):  # pragma: no cover
             print('returning true')
         return True
 
-
 class OpenShiftCLIConfig(object):
     '''Generic Config'''
     def __init__(self, rname, namespace, kubeconfig, options):
@@ -1433,18 +1438,28 @@ class OpenShiftCLIConfig(object):
         ''' return config options '''
         return self._options
 
-    def to_option_list(self):
-        '''return all options as a string'''
-        return self.stringify()
+    def to_option_list(self, ascommalist=''):
+        '''return all options as a string
+           if ascommalist is set to the name of a key, and
+           the value of that key is a dict, format the dict
+           as a list of comma delimited key=value pairs'''
+        return self.stringify(ascommalist)
 
-    def stringify(self):
-        ''' return the options hash as cli params in a string '''
+    def stringify(self, ascommalist=''):
+        ''' return the options hash as cli params in a string
+            if ascommalist is set to the name of a key, and
+            the value of that key is a dict, format the dict
+            as a list of comma delimited key=value pairs '''
         rval = []
         for key in sorted(self.config_options.keys()):
             data = self.config_options[key]
             if data['include'] \
                and (data['value'] or isinstance(data['value'], int)):
-                rval.append('--{}={}'.format(key.replace('_', '-'), data['value']))
+                if key == ascommalist:
+                    val = ','.join(['{}={}'.format(kk, vv) for kk, vv in sorted(data['value'].items())])
+                else:
+                    val = data['value']
+                rval.append('--{}={}'.format(key.replace('_', '-'), val))
 
         return rval
 
@@ -1461,10 +1476,12 @@ class SecretConfig(object):
                  sname,
                  namespace,
                  kubeconfig,
-                 secrets=None):
+                 secrets=None,
+                 stype=None):
         ''' constructor for handling secret options '''
         self.kubeconfig = kubeconfig
         self.name = sname
+        self.type = stype
         self.namespace = namespace
         self.secrets = secrets
         self.data = {}
@@ -1475,6 +1492,7 @@ class SecretConfig(object):
         ''' assign the correct properties for a secret dict '''
         self.data['apiVersion'] = 'v1'
         self.data['kind'] = 'Secret'
+        self.data['type'] = self.type
         self.data['metadata'] = {}
         self.data['metadata']['name'] = self.name
         self.data['metadata']['namespace'] = self.namespace
@@ -1564,12 +1582,14 @@ class OCSecret(OpenShiftCLI):
     def __init__(self,
                  namespace,
                  secret_name=None,
+                 secret_type=None,
                  decode=False,
                  kubeconfig='/etc/origin/master/admin.kubeconfig',
                  verbose=False):
         ''' Constructor for OpenshiftOC '''
         super(OCSecret, self).__init__(namespace, kubeconfig=kubeconfig, verbose=verbose)
         self.name = secret_name
+        self.type = secret_type
         self.decode = decode
 
     def get(self):
@@ -1600,6 +1620,8 @@ class OCSecret(OpenShiftCLI):
 
         secrets = ["%s=%s" % (sfile['name'], sfile['path']) for sfile in files]
         cmd = ['secrets', 'new', self.name]
+        if self.type is not None:
+            cmd.append("--type=%s" % (self.type))
         cmd.extend(secrets)
 
         results = self.openshift_cmd(cmd)
@@ -1633,6 +1655,8 @@ class OCSecret(OpenShiftCLI):
 
         secrets = ["%s=%s" % (sfile['name'], sfile['path']) for sfile in files]
         cmd = ['-ojson', 'secrets', 'new', self.name]
+        if self.type is not None:
+            cmd.extend(["--type=%s" % (self.type)])
         cmd.extend(secrets)
 
         return self.openshift_cmd(cmd, output=True)
@@ -1645,6 +1669,7 @@ class OCSecret(OpenShiftCLI):
 
         ocsecret = OCSecret(params['namespace'],
                             params['name'],
+                            params['type'],
                             params['decode'],
                             kubeconfig=params['kubeconfig'],
                             verbose=params['debug'])
@@ -1767,6 +1792,7 @@ def main():
             debug=dict(default=False, type='bool'),
             namespace=dict(default='default', type='str'),
             name=dict(default=None, type='str'),
+            type=dict(default=None, type='str'),
             files=dict(default=None, type='list'),
             delete_after=dict(default=False, type='bool'),
             contents=dict(default=None, type='list'),

@@ -17,11 +17,10 @@
 
 - name: Generate certificates
   command: >
-    {{ openshift.common.admin_binary }} --config={{ mktemp.stdout }}/admin.kubeconfig ca create-signer-cert
+    {{ openshift.common.client_binary }} adm --config={{ mktemp.stdout }}/admin.kubeconfig ca create-signer-cert
     --key={{generated_certs_dir}}/ca.key --cert={{generated_certs_dir}}/ca.crt
     --serial={{generated_certs_dir}}/ca.serial.txt --name=logging-signer-test
   check_mode: no
-  become: false
   when:
     - not ca_key_file.stat.exists
     - not ca_cert_file.stat.exists
@@ -125,7 +124,7 @@
     - system.logging.mux
   loop_control:
     loop_var: node_name
-  when: openshift_logging_use_mux
+  when: openshift_logging_use_mux | bool
 
 - name: Generate PEM cert for Elasticsearch external route
   include: generate_pems.yaml component={{node_name}}

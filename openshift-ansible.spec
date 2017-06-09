@@ -9,7 +9,7 @@
 %global __requires_exclude ^/usr/bin/ansible-playbook$
 
 Name:           openshift-ansible
-Version:        3.6.86
+Version:        3.6.89.4
 Release:        1%{?dist}
 Summary:        Openshift and Atomic Enterprise Ansible
 License:        ASL 2.0
@@ -280,6 +280,88 @@ Atomic OpenShift Utilities includes
 
 
 %changelog
+* Thu Jun 08 2017 Jenkins CD Merge Bot <tdawson@redhat.com> 3.6.89.4-1
+- Guard check for container install based on openshift dictionary key
+  (ayoung@redhat.com)
+- Separate client config removal in uninstall s.t. ansible_ssh_user is removed
+  from with_items. (abutcher@redhat.com)
+- Remove supported/implemented barrier for registry object storage providers.
+  (abutcher@redhat.com)
+- Add node unit file on upgrade (smilner@redhat.com)
+- fix up openshift-ansible for use with 'oc cluster up' (jcantril@redhat.com)
+- specify all logging index mappings for kibana (jcantril@redhat.com)
+- openshift-master: set r_etcd_common_etcd_runtime (gscrivan@redhat.com)
+- rename daemon.json to container-daemon.json (smilner@redhat.com)
+- Updating probe timeout and exposing variable to adjust timeout in image
+  (ewolinet@redhat.com)
+- Do not attempt to override openstack nodename (jdetiber@redhat.com)
+- Update image stream to openshift/origin:2c55ade (skuznets@redhat.com)
+
+* Wed Jun 07 2017 Jenkins CD Merge Bot <tdawson@redhat.com> 3.6.89.3-1
+- Use local openshift.master.loopback_url when generating initial master
+  loopback kubeconfigs. (abutcher@redhat.com)
+
+* Tue Jun 06 2017 Jenkins CD Merge Bot <tdawson@redhat.com> 3.6.89.2-1
+- 
+
+* Tue Jun 06 2017 Jenkins CD Merge Bot <tdawson@redhat.com> 3.6.89.1-1
+- Updating image for registry_console (ewolinet@redhat.com)
+- add elasticseatch, fluentd, kibana check (jvallejo@redhat.com)
+- show correct default value in inventory (mmckinst@redhat.com)
+- Skip service restarts within ca redeployment playbook when expired
+  certificates are detected. (abutcher@redhat.com)
+- Add mtu setting to /etc/sysconfig/docker-network (sdodson@redhat.com)
+- Add daemon_reload parameter to service tasks (tbielawa@redhat.com)
+- mux uses fluentd cert/key to talk to ES (rmeggins@redhat.com)
+- fix curator host, port params; remove curator es volumes
+  (rmeggins@redhat.com)
+- add mux docs; allow to specify mux namespaces (rmeggins@redhat.com)
+- oc_secret: allow for specifying secret type (jarrpa@redhat.com)
+- Revert "Merge pull request #4271 from DG-i/master" (skuznets@redhat.com)
+- verify upgrade targets separately for each group (masters, nodes, etcd)
+  (jchaloup@redhat.com)
+- Updating Kibana-proxy secret key name, fixing deleting secrets, fixed extra
+  ES dc creation (ewolinet@redhat.com)
+- upgrade: Reload systemd before restart (smilner@redhat.com)
+- Skip router/registry cert redeploy when
+  openshift_hosted_manage_{router,registry}=false (abutcher@redhat.com)
+- disable docker excluder before it is updated to remove older excluded
+  packages (jchaloup@redhat.com)
+- Support byo etcd for calico (djosborne10@gmail.com)
+- preflight int tests: fix for package_version changes (lmeyer@redhat.com)
+- Remove unnecessary comment. (rhcarvalho@gmail.com)
+- update aos_version module to support generic pkgs and versions
+  (jvallejo@redhat.com)
+- Add separate variables for control plane nodes (sdodson@redhat.com)
+- Copy Nuage VSD generated user certificates to Openshift master nodes
+  (sneha.deshpande@nokia.com)
+- add existing_ovs_version check (jvallejo@redhat.com)
+- Tolerate failures in the node upgrade playbook (sdodson@redhat.com)
+
+* Wed May 31 2017 Scott Dodson <sdodson@redhat.com> 3.6.89.0-1
+- AMP 2.0 (sdodson@redhat.com)
+- add support for oc_service for labels, externalIPs (rmeggins@redhat.com)
+- [JMAN4-161] Add templates and pv example for cloudforms jboss middleware
+  manager (pgier@redhat.com)
+
+* Wed May 31 2017 Scott Dodson <sdodson@redhat.com> 3.6.89-1
+- Adding default value for openshift_hosted_logging_storage_kind
+  (ewolinet@redhat.com)
+- memory check: use GiB/MiB and adjust memtotal (lmeyer@redhat.com)
+- bool (sdodson@redhat.com)
+- Metrics: update the imagePullPolicy to be always (mwringe@redhat.com)
+- Remove typos that got reintroduced (smilner@redhat.com)
+- oc_atomic_container: Workaround for invalid json from atomic command
+  (smilner@redhat.com)
+- Remove system-package=no from container-engine install (smilner@redhat.com)
+- oc_atomic_container: Hard code system-package=no (smilner@redhat.com)
+- Updating to generate PVC when storage type is passed in as nfs
+  (ewolinet@redhat.com)
+- disable become for local actions (Mathias.Merscher@dg-i.net)
+- check for rpm version and docker image version equality only if
+  openshift_pkg_version and openshift_image_tag are not defined
+  (jchaloup@redhat.com)
+
 * Tue May 30 2017 Jenkins CD Merge Bot <tdawson@redhat.com> 3.6.86-1
 - Reduce memory requirement to 2gb for fedora ci jobs (sdodson@redhat.com)
 - openshift_logging: increasing *_elasticsearch_* default CPU and memory
